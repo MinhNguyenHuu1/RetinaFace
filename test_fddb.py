@@ -103,7 +103,10 @@ if __name__ == '__main__':
 
     # testing dataset
     TEST_FOLDER = '/home/tungnguyendinh/review_assistant/git_repo/Pytorch_Retinaface/inputs/'
-    TEST_FOLDER = '/home/nguyenhuuminh/MyProjects/ReviewAssistant/pvn-review-assistant/data/pixta_mr_chip/'
+    TEST_FOLDER = '/home/nguyenhuuminh/MyProjects/ReviewAssistant/pvn-review-assistant/data/pixta_new_chips_22_39_filtered/'
+    # TEST_FOLDER = '/home/nguyenhuuminh/MyProjects/ReviewAssistant/pvn-review-assistant/data/test/'
+    TEST_FOLDER = '/home/nguyenhuuminh/MyProjects/ReviewAssistant/pvn-review-assistant/data/pixta_22_43/test/'
+    TEST_FOLDER = '/home/tungnguyendinh/review_assistant/project/data/crawled_data_2d/'
     images = glob(TEST_FOLDER + '*.jpg')
     num_images = len(images)
     # print(images)
@@ -139,11 +142,12 @@ if __name__ == '__main__':
             resize = MAX_SIZE / im_height
         else:
             resize = MAX_SIZE / im_width
-        resize = min(resize, 1)
+        # resize = min(resize, 1)
+        resize = 1
 
         img = cv2.resize(img, None, None, fx=resize, fy=resize, interpolation=cv2.INTER_LINEAR)
         im_height, im_width, _ = img.shape
-        # print(img_name, im_height, im_width)
+        print(img_name, im_height, im_width)
         scale = torch.Tensor([img.shape[1], img.shape[0], img.shape[1], img.shape[0]])
         img -= (104, 117, 123)
         img = img.transpose(2, 0, 1)
@@ -189,9 +193,9 @@ if __name__ == '__main__':
         keep = py_cpu_nms(dets, args.nms_threshold)
 
         dets = dets[keep, :]
-        print(dets.shape)
+        # print(dets.shape)
         landms = landms[keep]
-        print(img_name, landms.shape)
+        # print(img_name, landms.shape)
         bbox_data_list = []
         dets = dets.astype(float)
         landms = landms.astype(float)
@@ -273,34 +277,34 @@ if __name__ == '__main__':
                 fw.write('{:d} {:d} {:d} {:d} {:.10f}\n'.format(int(xmin), int(ymin), int(w), int(h), score))
         # print('im_detect: {:d}/{:d} forward_pass_time: {:.4f}s misc: {:.4f}s'.format(i + 1, num_images, _t['forward_pass'].average_time, _t['misc'].average_time))
 
-        # show image
-        if args.save_image:
-            for b in dets:
-                if b[4] < args.vis_thres:
-                    continue
-                text = "{:.2f}".format(b[4])
-                b = list(map(int, b))
-                cv2.rectangle(img_raw, (b[0], b[1]), (b[2], b[3]), (0, 255, 0), 2)
-                cx = b[0] + 20
-                cy = b[1] + 12
-                cv2.putText(img_raw, text, (cx, cy),
-                            cv2.FONT_HERSHEY_DUPLEX, 0.5, (255, 255, 255))
+        # # show image
+        # if args.save_image:
+        #     for b in dets:
+        #         if b[4] < args.vis_thres:
+        #             continue
+        #         text = "{:.2f}".format(b[4])
+        #         b = list(map(int, b))
+        #         cv2.rectangle(img_raw, (b[0], b[1]), (b[2], b[3]), (0, 255, 0), 2)
+        #         cx = b[0] + 20
+        #         cy = b[1] + 12
+        #         cv2.putText(img_raw, text, (cx, cy),
+        #                     cv2.FONT_HERSHEY_DUPLEX, 0.5, (255, 255, 255))
 
-                # landms
-                cv2.circle(img_raw, (b[5], b[6]), 1, (0, 0, 255), 4)
-                cv2.circle(img_raw, (b[7], b[8]), 1, (0, 255, 255), 4)
-                cv2.circle(img_raw, (b[9], b[10]), 1, (255, 0, 255), 4)
-                cv2.circle(img_raw, (b[11], b[12]), 1, (0, 255, 0), 4)
-                cv2.circle(img_raw, (b[13], b[14]), 1, (255, 0, 0), 4)
-            # save image
-            name = f"{args.save_folder}{img_name}"
-            cv2.imwrite(name, img_raw)
+        #         # landms
+        #         cv2.circle(img_raw, (b[5], b[6]), 1, (0, 0, 255), 4)
+        #         cv2.circle(img_raw, (b[7], b[8]), 1, (0, 255, 255), 4)
+        #         cv2.circle(img_raw, (b[9], b[10]), 1, (255, 0, 255), 4)
+        #         cv2.circle(img_raw, (b[11], b[12]), 1, (0, 255, 0), 4)
+        #         cv2.circle(img_raw, (b[13], b[14]), 1, (255, 0, 0), 4)
+        #     # save image
+        #     name = f"{args.save_folder}{img_name}"
+        #     cv2.imwrite(name, img_raw)
 
     # d = {'img_name': img_listt, 'lm': lm_listt}
     # df = pd.DataFrame(data=d)
     # df.to_csv('dataa.csv')
 
-        with open('predictions.json', 'w') as file:
+        with open('predictions_fake2d_1.json', 'w') as file:
             json.dump(data_pred_dict, file)
 
     print('Infer time = ', time.time() - start_time)

@@ -1,4 +1,4 @@
-CUDA_VISIBLE_DEVICES=0 \
+CUDA_VISIBLE_DEVICES=2 \
     python test_fddb.py \
     --network resnet50 \
     --save_folder weights/pixta_hard_cases/ \
